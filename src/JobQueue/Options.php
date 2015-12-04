@@ -50,4 +50,9 @@ class Options {
 
         return array_key_exists($this->options, $key) ? $this->options[$key] : $default;
     }
+
+    public function setOptions($options) {
+
+        $this->options = $options;
+    }
 }
