@@ -3,7 +3,7 @@
   "license": "MIT",
   "version": "1.0.1",
   "autoload": {
-    "psr-0" : {
+    "psr-4" : {
       "JobQueue\\" : "src/JobQueue"
     }
   },
