@@ -1,9 +1,10 @@
 {
   "name": "vkoptev/job_queue",
-  "version": "1.0.0",
+  "license": "MIT",
+  "version": "1.0.1",
   "autoload": {
     "psr-0" : {
-      "JobQueue" : "src"
+      "JobQueue\\" : "src/JobQueue"
     }
   },
   "repositories": [
