@@ -1,0 +1,15 @@
+{
+  "name": "VKoptev/job_queue",
+  "version": "1.0.0",
+  "autoload": {
+    "psr-0" : {
+      "JobQueue" : "src"
+    }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/VKoptev/job_queue.git"
+    }
+  ]
+}
