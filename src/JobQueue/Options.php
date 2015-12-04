@@ -48,7 +48,7 @@ class Options {
      */
     public function get($key, $default = null) {
 
-        return array_key_exists($this->options, $key) ? $this->options[$key] : $default;
+        return array_key_exists($key, $this->options) ? $this->options[$key] : $default;
     }
 
     public function setOptions($options) {
