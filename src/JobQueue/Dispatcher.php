@@ -8,7 +8,7 @@ namespace JobQueue;
  */
 class Dispatcher {
 
-    use MongoTrait, LogTrait;
+    use MongoTrait;
 
     const WORKERS_MAX = 10;
     const HOVERING_TIMEOUT = 60; // in sec
