@@ -24,6 +24,7 @@ abstract class JobBase {
 
     public function __construct($data) {
 
+        $this->mongoInit();
         // fill this
         $this->data = $data;
     }

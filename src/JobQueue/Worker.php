@@ -4,8 +4,6 @@ namespace JobQueue;
 
 class Worker {
 
-    use LogTrait;
-
     private $jobId = null;
 
     public function __construct($jobId) {

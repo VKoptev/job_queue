@@ -39,7 +39,7 @@ trait MongoTrait {
      */
     protected function collection() {
 
-        return $this->mongo->{$this->collection};
+        return $this->mongo()->{$this->collection};
     }
 
 }
