@@ -7,6 +7,9 @@
       "JobQueue\\" : "src/JobQueue"
     }
   },
+  "require": {
+    "php": ">=5.5.0"
+  },
   "repositories": [
     {
       "type": "git",
