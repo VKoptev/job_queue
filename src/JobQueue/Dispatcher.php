@@ -142,16 +142,25 @@ class Dispatcher {
     private function getNewJob() {
 
         $condition = ['_id' => ['$nin' => array_values($this->ignoreJobs) ?: []]];
+        $startAt = [
+            ['start' => ['$exists' => 0]],
+            ['start' => null],
+            ['start' => ['$lte' => new \MongoDate()]],
+        ];
         if ($this->timeout > 0) {
-            $condition['$or'] = [
-                ['status' => JobBase::STATUS_NEW],
-                [
-                    'status'  => JobBase::STATUS_IN_PROCESS,
-                    'updated' => ['$lte' => new \MongoDate(time() - $this->timeout)]
-                ]
+            $condition['$and'] = [
+                ['$or' => [
+                    ['status' => JobBase::STATUS_NEW],
+                    [
+                        'status'  => JobBase::STATUS_IN_PROCESS,
+                        'updated' => ['$lte' => new \MongoDate(time() - $this->timeout)]
+                    ]
+                ]],
+                ['$or' => $startAt]
             ];
         } else {
             $condition['status'] = JobBase::STATUS_NEW;
+            $condition['$or'] = $startAt;
         }
 
         $job = $this->collection()->find($condition, ['_id' => 1])->limit($this->workerMax);

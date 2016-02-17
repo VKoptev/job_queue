@@ -53,6 +53,9 @@ class JobFabric {
             'created' => new \MongoDate(),
             'updated' => new \MongoDate(),
         ]);
+        if (!empty($doc['start'])) {
+            $doc['start'] = new \MongoDate($doc['start']);
+        }
         $this->collection()->save($doc);
     }
 

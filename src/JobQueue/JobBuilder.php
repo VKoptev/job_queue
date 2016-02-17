@@ -7,6 +7,7 @@ abstract class JobBuilder {
 
     private $block = null;
     private $data = [];
+    private $start = null;
 
     public function __construct() {
     }
@@ -29,13 +30,28 @@ abstract class JobBuilder {
             'status' => JobBase::STATUS_NEW,
             'data'   => $this->data,
             'type'   => $this->type(),
+            'start'  => $this->start,
             'block'  => $this->block,
         ];
     }
 
+    /**
+     * @param string $key
+     * @return $this
+     */
     public function setBlock($key) {
 
         $this->block = $key;
+        return $this;
+    }
+
+    /**
+     * @param int $start Timestamp
+     * @return $this
+     */
+    public function setStart($start) {
+
+        $this->start = intval($start) ?: null;
         return $this;
     }
 
