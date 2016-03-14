@@ -6,6 +6,7 @@ namespace JobQueue;
 abstract class JobBuilder {
 
     private $block = null;
+    private $rerun = true;
     private $data = [];
 
     public function __construct() {
@@ -30,6 +31,7 @@ abstract class JobBuilder {
             'data'   => $this->data,
             'type'   => $this->type(),
             'block'  => $this->block,
+            'rerun'  => $this->rerun,
         ];
     }
 
@@ -37,6 +39,14 @@ abstract class JobBuilder {
 
         $this->block = $key;
         return $this;
+    }
+
+    /**
+     * @param bool $value
+     *
+     */
+    public function setRerun($value){
+        $this->rerun = $value;
     }
 
     /**

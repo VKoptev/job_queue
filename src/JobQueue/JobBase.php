@@ -70,6 +70,12 @@ abstract class JobBase {
 
     protected function failJob($result = []) {
 
+        $job = $this->collection()->findOne(['_id' => new \MongoId($this->_id)]);
+
+        if(!empty($job['rerun'])){
+            unset($job['_id']);
+        }
+
         $this->processJob(self::STATUS_ERROR, $result);
     }
 }
