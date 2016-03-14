@@ -51,8 +51,8 @@ class Options {
         return array_key_exists($key, $this->options) ? $this->options[$key] : $default;
     }
 
-    public function setOptions($options) {
+    public function setOptions($options, $replace = false) {
 
-        $this->options = $options;
+        $this->options = $replace ? $options : array_merge($this->options, $options);
     }
 }
