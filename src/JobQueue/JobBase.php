@@ -98,7 +98,7 @@ abstract class JobBase {
         $job['status'] = self::STATUS_NEW;
 
         if(!empty($job['rerun_step'])){
-            $job['start'] = new \MongoDate(time() + $this->getFibonacciDelay(intval($job['rerun_step'])));
+            $job['start'] = new \MongoDate(time() + $this->getFibonacciDelay($job['rerun_step']));
         }
 
         $this->collection()->save($job);
@@ -109,21 +109,15 @@ abstract class JobBase {
      * @return int|null
      */
     private function getFibonacciDelay($n){
-        if($n){
 
-            if(in_array($n, [1,2])){
-                return 1;
-            }
+        $n = intval($n);
 
-            $a = 1; $b = 1;
-            for ($i = 3; $i <= min($n, self::MAX_STEP_RERUN); $i++) {
-                $b = $a + $b;
-                $a = $b - $a;
+        $a = 1; $b = 1;
+        for ($i = 3; $i <= min($n, self::MAX_STEP_RERUN); $i++) {
+            $b = $a + $b;
+            $a = $b - $a;
 
-            }
-            return $b;
         }
-
-        return null;
+        return $b;
     }
 }
