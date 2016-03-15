@@ -72,30 +72,65 @@ abstract class JobBase {
 
     protected function failJob($result = []) {
 
-        $job = $this->collection()->findOne(['_id' => new \MongoId($this->_id)]);
+        $job = $this->data;
 
         if(!empty($job['rerun'])){
-
-            $f[1] = $f[2] = 1;
-
-            //fibonacci sequence
-            for ($i = 3; $i <= self::MAX_STEP_RERUN + 1; $i++) {
-                $f[$i] = $f[$i-1] + $f[$i-2];
-            }
-
             $rerunNextStep = empty($job['rerun_step']) ? 1 : intval($job['rerun_step']) + 1;
 
             if($rerunNextStep <= self::MAX_STEP_RERUN){
-                unset($job['_id']);
                 $job['rerun_step'] = $rerunNextStep;
-                $job['status'] = self::STATUS_NEW;
-                $job['created'] = new \MongoDate();
-                $job['updated'] = new \MongoDate();
-                $job['start'] = new \MongoDate(time() + $f[$rerunNextStep]);
-                $this->collection()->save($job);
+                $job['original'] = (string)$job['_id'];
+                unset($job['_id']);
+                $this->saveJob($job);
             }
         }
 
         $this->processJob(self::STATUS_ERROR, $result);
+    }
+
+    /**
+     * @param array $job
+     */
+    protected function saveJob($job = []){
+
+        $job['created'] = new \MongoDate();
+        $job['updated'] = new \MongoDate();
+        $job['status'] = self::STATUS_NEW;
+
+        if(!empty($job['rerun_step'])){
+            $job['start'] = new \MongoDate(time() + $this->getFibonacciDelay(intval($job['rerun_step'])));
+        }
+
+        $this->collection()->save($job);
+    }
+
+    /**
+     * @param $n
+     * @return int|null
+     */
+    private function getFibonacciDelay($n){
+        if($n){
+            $a = 1;
+            $b = 1;
+            $i = 3;
+
+            if(in_array($n, [1,2])){
+                return 1;
+            }
+
+            while($i <= self::MAX_STEP_RERUN) {
+
+                $c = $a + $b;
+                $a = $b;
+                $b = $c;
+
+                if($n == $i){
+                    return $c;
+                }
+                $i++;
+            }
+        }
+
+        return null;
     }
 }
