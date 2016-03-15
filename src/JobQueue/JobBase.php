@@ -20,6 +20,8 @@ abstract class JobBase {
     const STATUS_ERROR      = 3;
     const STATUS_BLOCKED    = 4;
 
+    const MAX_STEP_RERUN = 10;
+
     private $data = [];
 
     public function __construct($data) {
@@ -73,7 +75,25 @@ abstract class JobBase {
         $job = $this->collection()->findOne(['_id' => new \MongoId($this->_id)]);
 
         if(!empty($job['rerun'])){
-            unset($job['_id']);
+
+            $f[1] = $f[2] = 1;
+
+            //fibonacci sequence
+            for ($i = 3; $i <= self::MAX_STEP_RERUN + 1; $i++) {
+                $f[$i] = $f[$i-1] + $f[$i-2];
+            }
+
+            $rerunNextStep = empty($job['rerun_step']) ? 1 : intval($job['rerun_step']) + 1;
+
+            if($rerunNextStep <= self::MAX_STEP_RERUN){
+                unset($job['_id']);
+                $job['rerun_step'] = $rerunNextStep;
+                $job['status'] = self::STATUS_NEW;
+                $job['created'] = new \MongoDate();
+                $job['updated'] = new \MongoDate();
+                $job['start'] = new \MongoDate(time() + $f[$rerunNextStep]);
+                $this->collection()->save($job);
+            }
         }
 
         $this->processJob(self::STATUS_ERROR, $result);
