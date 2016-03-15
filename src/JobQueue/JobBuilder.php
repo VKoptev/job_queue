@@ -2,13 +2,18 @@
 
 namespace JobQueue;
 
-
+/**
+ * Class JobBuilder
+ * @package JobQueue
+ * @method JobBuilder setRerunStep(int $step)
+ */
 abstract class JobBuilder {
 
     private $block = null;
     private $rerun = true;
     private $data = [];
     private $start = null;
+    private $original = null;
 
     public function __construct() {
     }
@@ -28,12 +33,13 @@ abstract class JobBuilder {
     public function getJob() {
 
         return [
-            'status' => JobBase::STATUS_NEW,
-            'data'   => $this->data,
-            'type'   => $this->type(),
-            'start'  => $this->start,
-            'block'  => $this->block,
-            'rerun'  => $this->rerun,
+            'status'    => JobBase::STATUS_NEW,
+            'data'      => $this->data,
+            'type'      => $this->type(),
+            'start'     => $this->start,
+            'block'     => $this->block,
+            'rerun'     => $this->rerun,
+            'original'  => $this->original,
         ];
     }
 
@@ -62,7 +68,18 @@ abstract class JobBuilder {
      *
      */
     public function setRerun($value){
-        $this->rerun = $value;
+
+        $this->rerun = boolval($value);
+    }
+
+    /**
+     * @param mixed $value
+     * @return $this
+     */
+    public function setOriginal($value){
+
+        $this->original = $value;
+        return $this;
     }
 
     /**
