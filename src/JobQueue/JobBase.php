@@ -8,6 +8,10 @@ namespace JobQueue;
  * @package App\Queue
  * @property int type
  * @property int status
+ * @property bool rerun
+ * @property \MongoDate start
+ * @property \MongoDate created
+ * @property \MongoDate updated
  * @property array data
  */
 abstract class JobBase {
@@ -20,13 +24,15 @@ abstract class JobBase {
     const STATUS_ERROR      = 3;
     const STATUS_BLOCKED    = 4;
 
-    private $data = [];
+    protected $maxStepOfRerun = 10;
+
+    private $internalData = [];
 
     public function __construct($data) {
 
         $this->mongoInit();
         // fill this
-        $this->data = $data;
+        $this->internalData = $data;
     }
 
     public function run() {
@@ -37,12 +43,12 @@ abstract class JobBase {
 
     public function __get($name) {
 
-        return array_key_exists($name, $this->data) ? $this->data[$name] : null;
+        return array_key_exists($name, $this->internalData) ? $this->internalData[$name] : null;
     }
 
     public function __isset($name) {
 
-        return array_key_exists($name, $this->data);
+        return array_key_exists($name, $this->internalData);
     }
 
     abstract protected function execute();
@@ -70,6 +76,44 @@ abstract class JobBase {
 
     protected function failJob($result = []) {
 
+        if ($this->rerun) {
+            $this->rerun();
+        }
         $this->processJob(self::STATUS_ERROR, $result);
+    }
+
+    /**
+     * Rerun current job
+     */
+    protected function rerun() {
+
+        $rerunNextStep = empty($this->data['rerunStep']) ? 1 : intval($this->data['rerunStep']) + 1;
+
+        if($rerunNextStep <= $this->maxStepOfRerun) {
+            JobFabric::getInstance()->createJob(
+                (new TypedBuilder())
+                    ->setType($this->type)
+                    ->setData($this->data)
+                    ->setRerunStep($rerunNextStep)
+                    ->setStart(time() + $this->getFibonacciDelay($rerunNextStep))
+                    ->setOriginal($this->_id)
+            );
+        }
+    }
+
+    /**
+     * @param int $n
+     * @return int
+     */
+    private function getFibonacciDelay($n){
+
+        $n = intval($n);
+
+        $a = 1; $b = 1;
+        for ($i = 3; $i <= min($n, $this->maxStepOfRerun); $i++) {
+            $b = $a + $b;
+            $a = $b - $a;
+        }
+        return $b;
     }
 }
