@@ -110,25 +110,18 @@ abstract class JobBase {
      */
     private function getFibonacciDelay($n){
         if($n){
-            $a = 1;
-            $b = 1;
-            $i = 3;
 
             if(in_array($n, [1,2])){
                 return 1;
             }
 
-            while($i <= self::MAX_STEP_RERUN) {
+            $a = 1; $b = 1;
+            for ($i = 3; $i <= min($n, self::MAX_STEP_RERUN); $i++) {
+                $b = $a + $b;
+                $a = $b - $a;
 
-                $c = $a + $b;
-                $a = $b;
-                $b = $c;
-
-                if($n == $i){
-                    return $c;
-                }
-                $i++;
             }
+            return $b;
         }
 
         return null;
