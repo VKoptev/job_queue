@@ -95,7 +95,7 @@ abstract class JobBase {
                     ->setType($this->type)
                     ->setData($this->data)
                     ->setRerunStep($rerunNextStep)
-                    ->setStart(time() + $this->getFibonacciDelay($this->data['rerunStep']))
+                    ->setStart(time() + $this->getFibonacciDelay($rerunNextStep))
                     ->setOriginal($this->_id)
             );
         }
