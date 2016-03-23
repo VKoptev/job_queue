@@ -65,11 +65,12 @@ abstract class JobBuilder {
 
     /**
      * @param bool $value
-     *
+     * @return $this
      */
     public function setRerun($value){
 
         $this->rerun = boolval($value);
+        return $this;
     }
 
     /**
