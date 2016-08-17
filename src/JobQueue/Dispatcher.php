@@ -141,7 +141,8 @@ class Dispatcher {
 
     private function getNewJob() {
 
-        $condition = ['_id' => ['$nin' => array_values($this->ignoreJobs) ?: []]];
+        $ignore = array_values($this->ignoreJobs) ?: [];
+        $condition = $ignore ? ['_id' => ['$nin' => $ignore]] : [];
         $startAt = [
             ['start' => ['$exists' => 0]],
             ['start' => null],
