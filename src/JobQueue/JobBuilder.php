@@ -14,6 +14,7 @@ abstract class JobBuilder {
     private $data = [];
     private $start = null;
     private $original = null;
+    private $priority = 1;
 
     public function __construct() {
     }
