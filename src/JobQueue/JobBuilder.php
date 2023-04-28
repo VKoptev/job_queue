@@ -14,6 +14,7 @@ abstract class JobBuilder {
     private $data = [];
     private $start = null;
     private $original = null;
+    private $priority = 1;
 
     public function __construct() {
     }
@@ -40,6 +41,7 @@ abstract class JobBuilder {
             'block'     => $this->block,
             'rerun'     => $this->rerun,
             'original'  => $this->original,
+            'priority'  => $this->getPriority(),
         ];
     }
 
@@ -95,5 +97,10 @@ abstract class JobBuilder {
     protected function setField($key, $value) {
 
         $this->data[$key] = $value;
+    }
+
+    protected function getPriority() {
+
+        return $this->priority;
     }
 }

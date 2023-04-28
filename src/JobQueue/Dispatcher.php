@@ -164,7 +164,7 @@ class Dispatcher {
             $condition['$or'] = $startAt;
         }
 
-        $job = $this->collection()->find($condition, ['_id' => 1])->limit($this->workerMax);
+        $job = $this->collection()->find($condition, ['_id' => 1])->sort(['priority' => -1, '_id' => -1])->limit($this->workerMax);
         $result = [];
         foreach ($job as $doc) {
             $result[] = $doc['_id'];
