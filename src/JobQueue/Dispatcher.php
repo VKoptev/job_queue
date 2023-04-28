@@ -18,7 +18,8 @@ class Dispatcher {
     private $workersCount = 0;
     private $workers = [];
     private $ignoreJobs = [];
-
+    private $sortNewJobs = [];
+    
     /**
      * max count of run workers
      * @var int
@@ -49,6 +50,7 @@ class Dispatcher {
         $this->workerMax = Options::getInstance()->get('worker_max_count', self::WORKERS_MAX);
         $this->log = Options::getInstance()->get('log', function(){ /*do nothing*/ });
         $this->timeout = intval(Options::getInstance()->get('hovering_timeout', self::HOVERING_TIMEOUT));
+        $this->sortNewJobs = Options::getInstance()->get('sort_new_jobs', []);
     }
 
     public function run() {
@@ -164,7 +166,12 @@ class Dispatcher {
             $condition['$or'] = $startAt;
         }
 
-        $job = $this->collection()->find($condition, ['_id' => 1])->sort(['priority' => -1, '_id' => -1])->limit($this->workerMax);
+        if (empty($this->sortNewJobs)) {
+            $job = $this->collection()->find($condition, ['_id' => 1])->limit($this->workerMax);
+        } else {
+            $job = $this->collection()->find($condition, ['_id' => 1])->sort($this->sortNewJobs)->limit($this->workerMax);   
+        }
+
         $result = [];
         foreach ($job as $doc) {
             $result[] = $doc['_id'];
